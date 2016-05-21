@@ -1,6 +1,7 @@
 package org.belgaia.emaildaily.EmailConnector;
 
 import org.belgaia.emaildaily.configuration.EmailParserConfiguration;
+import org.belgaia.emaildaily.model.EmailData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +41,44 @@ public class EmailParser {
                 emailStarterIdFound = Boolean.TRUE;
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(configuration.getEmailDirectoryPath() + File.separator + "email_" + emailCounter++))));
             } else if (emailStarterIdFound){
-                writer.append(line);
+                writer.append(line + "\n");
             }
         }
         writer.close();
     }
 
-    public void getEmailContentByEmailName(String emailName) {
+    public EmailData getEmailData(String emailName) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(configuration.getEmailDirectoryPath() + File.separator + emailName))));
+        String line = "";
+        EmailData email = new EmailData();
 
+        while((line = bufferedReader.readLine()) != null) {
+            if(line.contains("From:")) {
+                //email.setFrom("Sender: " + extractSenderFromLine(line));
+                email.setFrom(line);
+            } else if(line.contains("To:")) {
+                email.setTo(extractAccountAddressFromLine(line));
+            } else if(line.contains("Subject:")) {
+                email.setSubject(extractSubjectFromLine(line));
+            }
+        }
+        return email;
+    }
+
+    private String extractSenderFromLine(String line) {
+        String sender = line.replace("From:", "");
+        sender = sender.replace("\"", "");
+        return sender.trim();
+    }
+
+    private String extractAccountAddressFromLine(String line) {
+        String address = line.replace("To:", "");
+        address = address.replace("To:", "");
+        return address.trim();
+    }
+
+    private String extractSubjectFromLine(String line) {
+        String subject = line.replace("Subject:", "");
+        return subject.trim();
     }
 }

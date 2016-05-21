@@ -62,4 +62,15 @@ public class RestController {
             return "Failed to get the content of email with name '" + emailName + "': " + e.getMessage();
         }
     }
+
+    @RequestMapping(value="/showEmailData", method=RequestMethod.GET)
+    public String showExtractedEmailData(@RequestParam(value="emailName") String emailName) {
+        try {
+            return emailService.getEmailData(emailName);
+        } catch (IOException e) {
+            LOG.error("Failed to get email data: " + e.getMessage());
+            e.printStackTrace();
+            return "Failed to get email data: " + e.getMessage();
+        }
+    }
 }

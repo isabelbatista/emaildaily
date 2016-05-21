@@ -1,6 +1,7 @@
 package org.belgaia.emaildaily.EmailConnector;
 
 import org.belgaia.emaildaily.configuration.EmailParserConfiguration;
+import org.belgaia.emaildaily.model.EmailData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,5 +92,18 @@ public class EmailDailyService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getEmailData(String emailName) throws IOException {
+        EmailData emailData = emailParser.getEmailData(emailName);
+
+        StringBuilder email = new StringBuilder("New Mail" + "\n" + "####################### \n");
+        email.append(emailData.getFrom() + "\n");
+        email.append(emailData.getTo() + "\n");
+        email.append(emailData.getSubject() + "\n");
+        email.append(emailData.getContent() + "\n");
+        email.append("\n");
+
+        return email.toString();
     }
 }
