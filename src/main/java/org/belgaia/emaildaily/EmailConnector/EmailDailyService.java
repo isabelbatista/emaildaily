@@ -1,5 +1,6 @@
 package org.belgaia.emaildaily.EmailConnector;
 
+import org.belgaia.emaildaily.configuration.EmailParserConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,15 +16,28 @@ import java.util.Optional;
 @Service
 public class EmailDailyService {
 
-    private static final String THUNDERBIRD_EMAIL_DIR = "/Users/Isa/Library/Thunderbird/Profiles/htfufzvv.default/Mail/pop.gmx.net";
     private static final String THUNDERBIRD_EMAIL_FILE = "Inbox";
     private static final Charset FILE_INPUT_CHARSET = Charset.forName("ISO-8859-1");
 
     @Autowired
     private EmailParser emailParser;
 
+    @Autowired
+    private EmailParserConfiguration configuration;
+
     public String getEmailContent() throws IOException {
         return getInboxContent();
+    }
+
+    public String getEmailContent(String emailName) throws IOException {
+        File emailFile = new File(configuration.getEmailDirectoryPath() + "/" + emailName);
+        StringBuilder emailContent = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(emailFile), FILE_INPUT_CHARSET));
+        String line = "";
+        while((line = bufferedReader.readLine()) != null) {
+            emailContent.append(line);
+        }
+        return emailContent.toString();
     }
 
     private String getInboxContent() throws IOException {
@@ -46,7 +60,7 @@ public class EmailDailyService {
     }
 
     private File[] getFilesFromEmailDirectory() {
-        File directory = new File(THUNDERBIRD_EMAIL_DIR);
+        File directory = new File(configuration.getEmailApplicationEmailDirectory());
         return directory.listFiles();
     }
 

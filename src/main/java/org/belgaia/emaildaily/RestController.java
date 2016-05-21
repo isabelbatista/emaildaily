@@ -54,6 +54,12 @@ public class RestController {
 
     @RequestMapping(value="/showEmailContent", method=RequestMethod.GET)
     public String showContentOfOneEmail(@RequestParam(value = "emailName") String emailName) {
-        return "Not yet implemented";
+        try {
+            return emailService.getEmailContent(emailName);
+        } catch (IOException e) {
+            LOG.error("Failed to get the content of email with name '" + emailName + "': " + e.getMessage());
+            e.printStackTrace();
+            return "Failed to get the content of email with name '" + emailName + "': " + e.getMessage();
+        }
     }
 }
