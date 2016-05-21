@@ -1,11 +1,13 @@
 package org.belgaia.emaildaily.EmailConnector;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Isabel Batista on 21.05.16.
@@ -16,6 +18,9 @@ public class EmailDailyService {
     private static final String THUNDERBIRD_EMAIL_DIR = "/Users/Isa/Library/Thunderbird/Profiles/htfufzvv.default/Mail/pop.gmx.net";
     private static final String THUNDERBIRD_EMAIL_FILE = "Inbox";
     private static final Charset FILE_INPUT_CHARSET = Charset.forName("ISO-8859-1");
+
+    @Autowired
+    private EmailParser emailParser;
 
     public String getEmailContent() throws IOException {
         return getInboxContent();
@@ -44,4 +49,22 @@ public class EmailDailyService {
         File directory = new File(THUNDERBIRD_EMAIL_DIR);
         return directory.listFiles();
     }
+
+    public void generateSeparateEmailFilesFromInboxDirectory() throws IOException {
+        emailParser.separateEmailsFromInboxFile(getInboxFile());
+    }
+
+    private Optional<File> getInboxFile() {
+        List<File> files = Arrays.asList(getFilesFromEmailDirectory());
+        Optional<File> inboxFile = Optional.empty();
+        for(File emailDirFile : files) {
+            if (emailDirFile.getName().equals(THUNDERBIRD_EMAIL_FILE)) {
+                inboxFile = Optional.of(emailDirFile);
+            }
+        }
+        return inboxFile;
+    }
+
+
+
 }
