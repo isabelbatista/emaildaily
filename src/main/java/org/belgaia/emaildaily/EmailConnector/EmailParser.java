@@ -38,7 +38,7 @@ public class EmailParser {
             if(line.contains(SEPARATOR_ID)) {
                 LOG.info("Found separator id for new email.");
                 emailStarterIdFound = Boolean.TRUE;
-                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(configuration.getEmailDirectoryPath() + "email_" + emailCounter++))));
+                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(configuration.getEmailDirectoryPath() + File.separator + "email_" + emailCounter++))));
             } else if (emailStarterIdFound){
                 writer.append(line);
             }
